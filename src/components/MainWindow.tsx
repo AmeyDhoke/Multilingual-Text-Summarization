@@ -23,6 +23,7 @@ const MainWindow = () => {
 
     const handleOnChange = (event: any) => {
         setText(event.target.value);
+        console.log(text)
     }
 
     const lang_options = [

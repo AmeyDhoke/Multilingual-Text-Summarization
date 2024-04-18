@@ -4,7 +4,7 @@ import api from "../api";
 const MainWindow = () => {
     const [text, setText] = useState('');
     const [summarizedText, setSummary] = useState('');
-    const [language, setLanguage] = useState(undefined);
+    const [language, setLanguage] = useState('');
 
     // const summarizeText = async(text: any) => {
     //     const response = await api.get('/text/summarize', text);
@@ -12,7 +12,16 @@ const MainWindow = () => {
     // }
 
     const summarizeMultiText = async(text: any, language?: any) => {
-        const response = await api.get('/text/summarize2', { params: {text: text , lang: language}});
+        const newtext = text.replace(/"/g,"'");
+        console.log(newtext)
+        console.log(language)
+        const text_to_summarize = {
+            text: newtext,
+            lang: language
+        }
+        console.log(text_to_summarize.text);
+        console.log(text_to_summarize.lang)
+        const response = await api.post('/text/summarize2', text_to_summarize);
         setSummary(response.data)
     }
 

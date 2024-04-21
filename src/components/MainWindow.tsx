@@ -1,59 +1,74 @@
-import {useState} from "react";
+import { useState } from "react";
 import api from "../api";
 
 const MainWindow = () => {
-    const [text, setText] = useState('');
-    const [summarizedText, setSummary] = useState('');
-    const [language, setLanguage] = useState(undefined);
+    const [text, setText] = useState("");
+    const [summarizedText, setSummary] = useState("");
+    const [language, setLanguage] = useState("english");
 
     // const summarizeText = async(text: any) => {
     //     const response = await api.get('/text/summarize', text);
     //     setSummary(response.data)
     // }
 
-    const summarizeMultiText = async(text: any, language?: any) => {
-        const response = await api.get('/text/summarize2', { params: {text: text , lang: language}});
-        setSummary(response.data)
-    }
+    const summarizeMultiText = async (text: any, language?: any) => {
+        const response = await api.get("/text/summarize2", {
+            params: { text: text, lang: language },
+        });
+        setSummary(response.data);
+    };
 
     const handleSelect = (event: any) => {
         setLanguage(event.target.value);
-    }
-    
+    };
 
     const handleOnChange = (event: any) => {
         setText(event.target.value);
-        console.log(text)
-    }
+        console.log(text);
+    };
 
     const lang_options = [
-        {label: "English", value: "english"},
-        {label: "Hindi", value: "hindi"},
-        {label: "Marathi", value: "marathi"},
-    ]
-
+        { label: "English", value: "english" },
+        { label: "Hindi", value: "hindi" },
+        { label: "Marathi", value: "marathi" },
+    ];
 
     return (
-        <div className="h-screen flex gap-4 justify-evenly items-center bg-cyan-100">
-            <div className="w-2/5 px-6 py-5  border-2 border-solid border-black h-96 rounded-lg bg-teal-300">
+        <div className="h-screen flex gap-4 bg-custGrey py-4 justify-evenly overflow-hidden items-center">
+            <div className="w-2/5 px-6 py-5 h-3/4  border-2  border-solid border-black flex flex-col justify-between rounded-lg bg-teal-300">
                 <textarea
-                    className="h-1/2 w-full p-4 rounded resize-none my-5 border-solid border-blue-600"
-                    placeholder="Paste your text here..." onChange={handleOnChange}
+                    className="h-1/2 w-full p-4 rounded resize-none my-5 border-solid border-blue-600 "
+                    placeholder="Paste your text here..."
+                    onChange={handleOnChange}
                 ></textarea>
+                <div className="flex flex-col">
                 <div>
-                <p>Select output language</p>
-                <select onChange={handleSelect}>
-                    {lang_options.map(option =>(
-                    <option value = {option.value}>{option.label}</option>
-                    ))}
-                </select>
+                    <p>Select output language</p>
+                    <select onChange={handleSelect}>
+                        {lang_options.map((option) => (
+                            <option value={option.value}>{option.label}</option>
+                        ))}
+                    </select>
+                    </div>
+                <button
+                    className={`bg-green-400 w-auto ${
+                        text == "" ? "cursor-not-allowed" : ""
+                    } mt-5 px-6 py-2`}
+                    onClick={() => summarizeMultiText(text, language)}
+                    >
+                    <span className=" text-white tracking-wide  h-full w-full block">
+                        Summarize
+                    </span>
+                </button>
                 </div>
-                <button className={`bg-slate-200 w-auto ${text == ''? 'cursor-not-allowed' : '' } mt-5`} onClick={() => summarizeMultiText(text, language)} >Summarize</button>
             </div>
-            <div className="bg-pink-500 px-6 py-5 border-2 border-solid w-2/5 border-black h-96 rounded-lg flex flex-col gap-2 items-center flex-shrink-0">
+            <div className="bg-pink-500 px-6 py-5 border-2 border-solid w-2/5 border-black h-3/4 rounded-lg flex flex-col gap-2 items-center flex-shrink-0">
                 <h1>This is the output of summarization</h1>
-                <textarea className="h-full w-full p-4 rounded resize-none my-5 border-solid border-blue-600 bg-white" disabled value={summarizedText}></textarea>
-
+                <textarea
+                    className="h-full w-full p-4 rounded resize-none my-5 border-solid border-blue-600 bg-white"
+                    disabled
+                    value={summarizedText}
+                ></textarea>
             </div>
         </div>
     );

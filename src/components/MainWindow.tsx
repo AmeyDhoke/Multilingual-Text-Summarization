@@ -11,12 +11,19 @@ const MainWindow = () => {
     //     setSummary(response.data)
     // }
 
-    const summarizeMultiText = async (text: any, language?: any) => {
-        const response = await api.get("/text/summarize2", {
-            params: { text: text, lang: language },
-        });
-        setSummary(response.data);
-    };
+    const summarizeMultiText = async(text: any, language?: any) => {
+        const newtext = text.replace(/"/g,"'");
+        console.log(newtext)
+        console.log(language)
+        const text_to_summarize = {
+            text: newtext,
+            lang: language
+        }
+        console.log(text_to_summarize.text);
+        console.log(text_to_summarize.lang)
+        const response = await api.post('/text/summarize2', text_to_summarize);
+        setSummary(response.data)
+    }
 
     const handleSelect = (event: any) => {
         setLanguage(event.target.value);

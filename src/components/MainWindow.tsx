@@ -22,7 +22,7 @@ const MainWindow = () => {
         console.log(text_to_summarize.text);
         console.log(text_to_summarize.lang)
         const response = await api.post('/text/summarize2', text_to_summarize);
-        setSummary(response.data)
+        setSummary(response.data.result)
     }
 
     const handleSelect = (event: any) => {

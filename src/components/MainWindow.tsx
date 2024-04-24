@@ -7,7 +7,7 @@ const MainWindow = () => {
     const [language, setLanguage] = useState("english");
 
     const summarizeText = async(text: any) => {
-        const response = await api.get('/text/summarize3', text);
+        const response = await api.get('/text/summarize3', {params: {text_to_summarize: text}});
         setSummary(response.data.result)
     }
 
@@ -31,7 +31,6 @@ const MainWindow = () => {
 
     const handleOnChange = (event: any) => {
         setText(event.target.value);
-        console.log(text);
     };
 
     const lang_options = [

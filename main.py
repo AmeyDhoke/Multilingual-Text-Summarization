@@ -72,7 +72,9 @@ def getsummarize(text_to_summarize: str):
 @app.get("/text/summarize3")
 def getsummarize3(text_to_summarize: str):
     print("I got the request")
-    result = bartsummarizer(text_to_summarize)
+    length = len(text_to_summarize.split())
+    print(f"length is {length}")
+    result = bartsummarizer(text_to_summarize, max_length = length//2, min_length = length//4)
     return {"result": result[0]['summary_text']}
 
 

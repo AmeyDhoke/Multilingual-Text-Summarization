@@ -6,24 +6,24 @@ const MainWindow = () => {
     const [summarizedText, setSummary] = useState("");
     const [language, setLanguage] = useState("english");
 
-    // const summarizeText = async(text: any) => {
-    //     const response = await api.get('/text/summarize', text);
-    //     setSummary(response.data)
-    // }
-
-    const summarizeMultiText = async(text: any, language?: any) => {
-        const newtext = text.replace(/"/g,"'");
-        console.log(newtext)
-        console.log(language)
-        const text_to_summarize = {
-            text: newtext,
-            lang: language
-        }
-        console.log(text_to_summarize.text);
-        console.log(text_to_summarize.lang)
-        const response = await api.post('/text/summarize2', text_to_summarize);
+    const summarizeText = async(text: any) => {
+        const response = await api.get('/text/summarize3', text);
         setSummary(response.data)
     }
+
+    // const summarizeMultiText = async(text: any, language?: any) => {
+    //     const newtext = text.replace(/"/g,"'");
+    //     console.log(newtext)
+    //     console.log(language)
+    //     const text_to_summarize = {
+    //         text: newtext,
+    //         lang: language
+    //     }
+    //     console.log(text_to_summarize.text);
+    //     console.log(text_to_summarize.lang)
+    //     const response = await api.post('/text/summarize2', text_to_summarize);
+    //     setSummary(response.data)
+    // }
 
     const handleSelect = (event: any) => {
         setLanguage(event.target.value);
@@ -51,7 +51,7 @@ const MainWindow = () => {
                 <div className="flex flex-col">
                 <div>
                     <p>Select output language</p>
-                    <select onChange={handleSelect}>
+                    <select onChange={handleSelect} value={language}>
                         {lang_options.map((option) => (
                             <option value={option.value}>{option.label}</option>
                         ))}
@@ -61,7 +61,7 @@ const MainWindow = () => {
                     className={`bg-green-400 w-auto ${
                         text == "" ? "cursor-not-allowed" : ""
                     } mt-5 px-6 py-2`}
-                    onClick={() => summarizeMultiText(text, language)}
+                    onClick={() => summarizeText(text)}
                     >
                     <span className=" text-white tracking-wide  h-full w-full block">
                         Summarize

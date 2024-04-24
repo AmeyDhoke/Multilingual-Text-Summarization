@@ -26,39 +26,40 @@ app.add_middleware(
 def read_root():
     return {"hello": "world"}
 
-students = {
-    1: {
-        "name": "john",
-        "age": 17,
-        "year": "year 12"
-    }
-}
+# students = {
+#     1: {
+#         "name": "john",
+#         "age": 17,
+#         "year": "year 12"
+#     }
+# }
 
 
-class Student(BaseModel):
-    name: str
-    age: int
-    year: str
+# class Student(BaseModel):
+#     name: str
+#     age: int
+#     year: str
 
-class Text(BaseModel):
-    text: str
-    lang: str | None = None
+# class Text(BaseModel):
+#     text: str
+#     lang: str | None = None
 
-model_name = "csebuetnlp/mT5_m2m_crossSum_enhanced"
-tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=False)
-model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+# model_name = "csebuetnlp/mT5_m2m_crossSum_enhanced"
+# tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=False)
+# model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
 
-def get_lang_id(lang):
-    try:
-        lang_id = tokenizer._convert_token_to_id(
-            model.config.task_specific_params["langid_map"][lang][1]
-        )
-    except (KeyError, AttributeError):
-        print("Language input wrong.")
-        lang_id = tokenizer._convert_token_to_id("en")  # Default to English
-    return lang_id
+# def get_lang_id(lang):
+#     try:
+#         lang_id = tokenizer._convert_token_to_id(
+#             model.config.task_specific_params["langid_map"][lang][1]
+#         )
+#     except (KeyError, AttributeError):
+#         print("Language input wrong.")
+#         lang_id = tokenizer._convert_token_to_id("en")  # Default to English
+#     return lang_id
 
+bartsummarizer = pipeline("summarization", model = "facebook/bart-large-cnn")
 
 
 @app.get("/text/summarize")
@@ -68,58 +69,62 @@ def getsummarize(text_to_summarize: str):
     result = summarizer(text_to_summarize)
     return {"result": result[0]['summary_text']}
 
-
-
-
-@app.post("/text/summarize2")
-def getsummary(text_to_summarize: Text):
+@app.get("/text/summarize3")
+def getsummarize3(text_to_summarize: str):
     print("I got the request")
-    lang_detected = detect(text_to_summarize.text)
-    if(text_to_summarize.lang == None):
-        if lang_detected == "en":
-            text_to_summarize.lang = "english"
-        elif lang_detected == "hi":
-            text_to_summarize.lang = "hindi"
-        elif lang_detected == "mr":
-            text_to_summarize.lang = "marathi"
-    t0 = time.time()
-    # model_name = "csebuetnlp/mT5_m2m_crossSum_enhanced"
-    # tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=False)
-    # model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
-    print("Tokenizer and model verified") 
-    t1 = time.time() - t0
-    print(f"Time required to load tokenizer and mode is {t1}")
-    # WHITESPACE_HANDLER = lambda k: re.sub('\s+', ' ', re.sub('\n+', ' ', k.strip()))
-    actual_text = text_to_summarize.text #WHITESPACE_HANDLER(text_to_summarize.text)
-    print(actual_text) 
-    minlength = len(actual_text.split()) // 4
-    print(minlength)
-    input_ids = tokenizer(
-        [text_to_summarize.text],
-        return_tensors="pt",
-        padding="max_length",
-        truncation=True,
-        max_length=len(actual_text.split())
-    )["input_ids"]
-    print("input ids complete")
-    output_ids = model.generate(
-        input_ids=input_ids,
-        decoder_start_token_id=get_lang_id(text_to_summarize.lang),
-        max_length=minlength*2,
-        min_length=minlength,
-        no_repeat_ngram_size=2,
-        num_beams=4,
-    )[0]
-    print("outputids complete")
-    summary = tokenizer.decode(
-        output_ids,
-        skip_special_tokens=True,
-        clean_up_tokenization_spaces=False
-    )
-    print("Summary is complete")
-    t2 = time.time() - t0
-    print(f"Overall time to complete the request {t2}")
-    return {"result": summary[14:]}
+    result = bartsummarizer(text_to_summarize)
+    return {"result": result[0]['summary_text']}
+
+
+# @app.post("/text/summarize2")
+# def getsummary(text_to_summarize: Text):
+#     print("I got the request")
+#     lang_detected = detect(text_to_summarize.text)
+#     if(text_to_summarize.lang == None):
+#         if lang_detected == "en":
+#             text_to_summarize.lang = "english"
+#         elif lang_detected == "hi":
+#             text_to_summarize.lang = "hindi"
+#         elif lang_detected == "mr":
+#             text_to_summarize.lang = "marathi"
+#     t0 = time.time()
+#     # model_name = "csebuetnlp/mT5_m2m_crossSum_enhanced"
+#     # tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=False)
+#     # model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+#     print("Tokenizer and model verified") 
+#     t1 = time.time() - t0
+#     print(f"Time required to load tokenizer and mode is {t1}")
+#     # WHITESPACE_HANDLER = lambda k: re.sub('\s+', ' ', re.sub('\n+', ' ', k.strip()))
+#     actual_text = text_to_summarize.text #WHITESPACE_HANDLER(text_to_summarize.text)
+#     print(actual_text) 
+#     minlength = len(actual_text.split()) // 4
+#     print(minlength)
+#     input_ids = tokenizer(
+#         [text_to_summarize.text],
+#         return_tensors="pt",
+#         padding="max_length",
+#         truncation=True,
+#         max_length=len(actual_text.split())
+#     )["input_ids"]
+#     print("input ids complete")
+#     output_ids = model.generate(
+#         input_ids=input_ids,
+#         decoder_start_token_id=get_lang_id(text_to_summarize.lang),
+#         max_length=minlength*2,
+#         min_length=minlength,
+#         no_repeat_ngram_size=2,
+#         num_beams=4,
+#     )[0]
+#     print("outputids complete")
+#     summary = tokenizer.decode(
+#         output_ids,
+#         skip_special_tokens=True,
+#         clean_up_tokenization_spaces=False
+#     )
+#     print("Summary is complete")
+#     t2 = time.time() - t0
+#     print(f"Overall time to complete the request {t2}")
+#     return {"result": summary[14:]}
 
 
 # @app.get("/items/{item_id}")

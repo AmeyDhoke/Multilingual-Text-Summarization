@@ -8,7 +8,7 @@ const MainWindow = () => {
 
     const summarizeText = async(text: any) => {
         const response = await api.get('/text/summarize3', text);
-        setSummary(response.data)
+        setSummary(response.data.result)
     }
 
     // const summarizeMultiText = async(text: any, language?: any) => {
